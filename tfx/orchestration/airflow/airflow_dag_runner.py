@@ -19,16 +19,16 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import os
+import os  # pylint: disable=unused-import
 from typing import Any, Dict, Optional, Text, Union
 
 import absl
-from airflow import models
+from airflow import models  # pylint: disable=unused-import
 
 from tfx.orchestration import pipeline
 from tfx.orchestration import tfx_runner
-from tfx.orchestration.airflow import airflow_component
-from tfx.orchestration.config import config_utils
+from tfx.orchestration.airflow import airflow_component  # pylint: disable=unused-import
+from tfx.orchestration.config import config_utils  # pylint: disable=unused-import
 from tfx.orchestration.config import pipeline_config
 
 
@@ -78,36 +78,4 @@ class AirflowDagRunner(tfx_runner.TfxRunner):
       An Airflow DAG.
     """
 
-    # Merge airflow-specific configs with pipeline args
-    airflow_dag = models.DAG(
-        dag_id=tfx_pipeline.pipeline_info.pipeline_name,
-        **self._config.airflow_dag_config)
-    if 'tmp_dir' not in tfx_pipeline.additional_pipeline_args:
-      tmp_dir = os.path.join(tfx_pipeline.pipeline_info.pipeline_root, '.temp',
-                             '')
-      tfx_pipeline.additional_pipeline_args['tmp_dir'] = tmp_dir
-
-    component_impl_map = {}
-    for tfx_component in tfx_pipeline.components:
-
-      (component_launcher_class,
-       component_config) = config_utils.find_component_launch_info(
-           self._config, tfx_component)
-      current_airflow_component = airflow_component.AirflowComponent(
-          airflow_dag,
-          component=tfx_component,
-          component_launcher_class=component_launcher_class,
-          pipeline_info=tfx_pipeline.pipeline_info,
-          enable_cache=tfx_pipeline.enable_cache,
-          metadata_connection_config=tfx_pipeline.metadata_connection_config,
-          beam_pipeline_args=tfx_pipeline.beam_pipeline_args,
-          additional_pipeline_args=tfx_pipeline.additional_pipeline_args,
-          component_config=component_config)
-      component_impl_map[tfx_component] = current_airflow_component
-      for upstream_node in tfx_component.upstream_nodes:
-        assert upstream_node in component_impl_map, ('Components is not in '
-                                                     'topological order')
-        current_airflow_component.set_upstream(
-            component_impl_map[upstream_node])
-
-    return airflow_dag
+    return None
