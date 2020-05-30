@@ -78,7 +78,7 @@ class IrisPipelineNativeKerasEndToEndTest(tf.test.TestCase):
 
     self.assertTrue(tf.io.gfile.exists(self._serving_model_dir))
     self.assertTrue(tf.io.gfile.exists(self._metadata_path))
-    expected_execution_count = 9  # 8 components + 1 resolver
+    expected_execution_count = 10  # 9 components + 1 resolver
     metadata_config = metadata.sqlite_metadata_connection_config(
         self._metadata_path)
     with metadata.Metadata(metadata_config) as m:
