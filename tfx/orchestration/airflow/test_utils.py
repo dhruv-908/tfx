@@ -57,7 +57,8 @@ def create_mysql_container(container_name: Text) -> int:
   for _ in range(_MYSQL_POLLING_MAX_ATTEMPTS):
     logging.info('Waiting for mysqld container...')
     time.sleep(_MYSQL_POLLING_INTERVAL_SEC)
-    exit_code, _ = container.exec_run('mysql -uroot -proot -e "SELECT 1;"')
+    exit_code, _ = container.exec_run(
+        'mysql -uroot -proot -e "show databases;"')
     if exit_code == 0:
       break
   else:
@@ -78,6 +79,7 @@ def create_mysql_container(container_name: Text) -> int:
   if exit_code != 0:
     output = output_bytes.decode('utf-8')
     logging.error('Failed to run sql for initialization:\n%s', output)
+    logging.error('Logs from mysql container:\n%s', container.logs())
     raise RuntimeError('Failed to run initialization SQLs: {}'.format(output))
 
   return int(container.ports[_MYSQL_PORT][0]['HostPort'])
